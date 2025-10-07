@@ -27,10 +27,11 @@ This workshop teaches you how to build AI-powered applications using **Google Ge
 
 ### Learning Resources
 
-7. **[Workshop Exercises](Workshop-Exercises)** - Hands-on coding exercises
-8. **[Advanced Topics](Advanced-Topics)** - Advanced patterns and techniques
-9. **[Troubleshooting](Troubleshooting)** - Common issues and solutions
-10. **[FAQ](FAQ)** - Frequently Asked Questions
+7. **[Quick Reference](Quick-Reference)** - Essential commands and code snippets
+8. **[Workshop Exercises](Workshop-Exercises)** - Hands-on coding exercises
+9. **[Advanced Topics](Advanced-Topics)** - Advanced patterns and techniques
+10. **[Troubleshooting](Troubleshooting)** - Common issues and solutions
+11. **[FAQ](FAQ)** - Frequently Asked Questions
 
 ## 🚀 Quick Start
 

@@ -4,16 +4,23 @@ This directory contains comprehensive documentation for the SysDev Genkit Worksh
 
 ## 📚 Wiki Pages
 
+### Main Content Pages
 1. **[Home](Home.md)** - Overview and navigation
 2. **[Getting Started](Getting-Started.md)** - Setup and installation guide  
 3. **[Genkit Concepts](Genkit-Concepts.md)** - Understanding core Genkit features
 4. **[Flows Guide](Flows-Guide.md)** - Detailed flow documentation
 5. **[Tools and Prompts](Tools-and-Prompts.md)** - Tools and prompts reference
 6. **[API Reference](API-Reference.md)** - REST API documentation
-7. **[Workshop Exercises](Workshop-Exercises.md)** - Hands-on coding exercises
-8. **[Advanced Topics](Advanced-Topics.md)** - Advanced patterns and techniques
-9. **[Troubleshooting](Troubleshooting.md)** - Common issues and solutions
-10. **[FAQ](FAQ.md)** - Frequently Asked Questions
+7. **[Quick Reference](Quick-Reference.md)** - Essential commands and code snippets
+8. **[Workshop Exercises](Workshop-Exercises.md)** - Hands-on coding exercises
+9. **[Advanced Topics](Advanced-Topics.md)** - Advanced patterns and techniques
+10. **[Troubleshooting](Troubleshooting.md)** - Common issues and solutions
+11. **[FAQ](FAQ.md)** - Frequently Asked Questions
+
+### Special Wiki Files
+- **[_Sidebar.md](_Sidebar.md)** - Custom sidebar navigation (appears on all pages)
+- **[_Footer.md](_Footer.md)** - Custom footer navigation (appears on all pages)
+- **[README.md](README.md)** - This setup guide
 
 ## 🚀 Setting Up GitHub Wiki
 
@@ -146,42 +153,49 @@ git push
 
 4. **Link from related pages**
 
-### Sidebar Navigation (GitHub Wiki)
+### Custom Sidebar Navigation
 
-If using GitHub Wiki, create a `_Sidebar.md`:
+The `_Sidebar.md` file provides consistent navigation on every wiki page. It includes:
+- ✅ Hierarchical navigation structure
+- ✅ Quick links to all major sections
+- ✅ Sub-section navigation with anchor links
+- ✅ External resource links
+- ✅ Categorized by learning path
 
-```markdown
-## Navigation
+**Features:**
+- Organized into sections: Home, Getting Started, Core Concepts, Development, Advanced, Help
+- Deep links to specific sections within pages
+- Quick access to Quick Reference card
+- External links to Genkit docs and API key sites
 
-**Getting Started**
-- [Home](Home)
-- [Setup](Getting-Started)
+**Customization:**
+Edit `_Sidebar.md` to:
+- Add new pages
+- Reorganize sections
+- Update external links
+- Change categories
 
-**Core Concepts**
-- [Genkit Basics](Genkit-Concepts)
-- [Flows](Flows-Guide)
-- [Tools & Prompts](Tools-and-Prompts)
+### Custom Footer Navigation
 
-**Development**
-- [API Reference](API-Reference)
-- [Exercises](Workshop-Exercises)
+The `_Footer.md` file appears at the bottom of every wiki page with:
+- ✅ Quick navigation (Previous/Home/Next)
+- ✅ Core documentation quick links
+- ✅ Help resources
+- ✅ Contribution links
+- ✅ Social sharing buttons
 
-**Advanced**
-- [Advanced Topics](Advanced-Topics)
+**Features:**
+- Consistent navigation across all pages
+- Quick access to frequently needed pages
+- Bug reporting and contribution links
+- GitHub star and social sharing
 
-**Help**
-- [Troubleshooting](Troubleshooting)
-- [FAQ](FAQ)
-```
-
-### Footer (GitHub Wiki)
-
-Create `_Footer.md`:
-
-```markdown
----
-💡 **Need help?** Check [Troubleshooting](Troubleshooting) | [FAQ](FAQ) | [GitHub Issues](https://github.com/username/repo/issues)
-```
+**Customization:**
+Edit `_Footer.md` to:
+- Update repository URL
+- Add team/organization links
+- Customize help resources
+- Add additional quick links
 
 ## 📝 Maintenance
 
@@ -225,9 +239,10 @@ Students and contributors can improve the wiki:
 
 ## 📊 Wiki Statistics
 
-- **Total Pages:** 10
-- **Code Examples:** 100+
-- **Exercises:** 10+
+- **Total Pages:** 14 (11 main + 3 special files)
+- **Code Examples:** 150+
+- **Exercises:** 10+ hands-on challenges
+- **Quick Reference Items:** 50+
 - **Estimated Reading Time:** 4-6 hours
 - **Hands-on Practice Time:** 8-12 hours
 
