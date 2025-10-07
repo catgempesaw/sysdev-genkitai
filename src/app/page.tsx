@@ -1,103 +1,137 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+
+type StudyPlan = {
+  subject: string;
+  topics: string[];
+  resource: { title: string; url: string };
+};
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [subject, setSubject] = useState<string>("");
+  const [plan, setPlan] = useState<StudyPlan | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [model, setModel] = useState<string>("googleai/gemini-1.5-pro");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const handleGenerate = async () => {
+    const s = subject.trim();
+    if (!s) {
+      setError("Please enter a subject");
+      return;
+    }
+    setError("");
+    setIsLoading(true);
+    setPlan(null);
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject: s, model }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Failed to generate");
+      setPlan(data.data as StudyPlan);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "Something went wrong";
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleGenerate();
+  };
+
+  return (
+    <div className="font-sans text-foreground">
+      <div className="flex flex-col gap-8">
+        <header className="space-y-2">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-brand-700 dark:text-brand-300">
+            Francis the StudyMate
+          </h1>
+          <p className="text-sm text-brand-800/80 dark:text-brand-100/80 max-w-prose">
+            Your friendly study plan generator. Enter a subject, hit Generate, and get a
+            clear set of topics plus one helpful resource.
+          </p>
+        </header>
+
+        <section className="flex flex-col gap-3" aria-label="Study plan generator">
+          <label htmlFor="subject" className="text-sm opacity-80">
+            Enter a subject
+          </label>
+          <div className="flex gap-2">
+            <input
+              id="subject"
+              aria-label="Subject"
+              tabIndex={0}
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="e.g., World History"
+              className="flex-1 rounded-md border border-brand-600/30 bg-white/80 dark:bg-brand-900/20 px-3 py-2 outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-500 placeholder:opacity-60"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            <label htmlFor="model" className="sr-only">Model</label>
+            <select
+              id="model"
+              aria-label="Model"
+              tabIndex={0}
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+              className="rounded-md border border-brand-600/30 bg-white/80 dark:bg-brand-900/20 px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-500"
+            >
+              <option value="googleai/gemini-1.5-pro">Gemini 1.5 Pro</option>
+              <option value="openai/gpt-4o-mini">OpenAI GPT-4o mini</option>
+              <option value="openai/gpt-4o">OpenAI GPT-4o</option>
+            </select>
+            <button
+              onClick={handleGenerate}
+              aria-label="Generate study plan"
+              className="rounded-md bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-brand-foreground px-4 py-2 text-sm font-medium shadow-sm disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-brand-400 disabled:cursor-not-allowed"
+              disabled={isLoading}
+            >
+              {isLoading ? "Generating…" : "Generate"}
+            </button>
+          </div>
+          {error && <p className="text-sm text-red-500" role="alert">{error}</p>}
+        </section>
+
+        <section aria-live="polite" className="space-y-4">
+          {isLoading && (
+            <div className="rounded-lg border border-brand-600/20 bg-brand-50/40 dark:bg-brand-900/20 p-4 animate-pulse">
+              <div className="h-4 w-40 bg-brand-600/30 rounded mb-2" />
+              <div className="space-y-1">
+                <div className="h-3 w-2/3 bg-brand-600/20 rounded" />
+                <div className="h-3 w-1/2 bg-brand-600/20 rounded" />
+                <div className="h-3 w-3/4 bg-brand-600/20 rounded" />
+              </div>
+            </div>
+          )}
+
+          {plan && !isLoading && (
+            <div className="rounded-lg border border-brand-600/20 bg-white/70 dark:bg-brand-900/20 backdrop-blur p-5 shadow-sm">
+              <h2 className="text-lg font-semibold text-brand-700 dark:text-brand-200">{plan.subject}</h2>
+              <ul className="list-disc pl-5 mt-2 space-y-1">
+                {plan.topics.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
+              {plan.resource?.url && (
+                <a
+                  href={plan.resource.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 mt-3 text-sm text-brand-700 dark:text-brand-300 underline hover:text-brand-800"
+                >
+                  {plan.resource.title || "View resource"}
+                  <span aria-hidden>↗</span>
+                </a>
+              )}
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

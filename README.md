@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SysDev Genkit Workshop
+
+A minimal Next.js (App Router) app demonstrating Google Genkit flows and tools to generate a concise study plan via an API route, with a small client UI.
+
+## Tech Stack
+- Next.js 15 (App Router)
+- React 19
+- TypeScript
+- Tailwind CSS v4 (via @tailwindcss/postcss)
+- Genkit ^1.21 with `@genkit-ai/google-genai`
+- Biome for linting/formatting
+
+## Project Structure
+```
+src/
+  app/
+    api/
+      generate/
+        route.ts       # POST /api/generate → calls Genkit flow
+    globals.css         # Tailwind base
+    layout.tsx
+    page.tsx            # Simple UI to call the API
+  index.ts              # Genkit flows/tools exported for server usage
+
+genkit.config.ts        # Genkit plugin configuration (googleAI)
+next.config.ts
+postcss.config.mjs
+package.json
+```
 
 ## Getting Started
-
-First, run the development server:
-
+1) Install dependencies
 ```bash
+bun install
+# or
+npm install
+# or
+yarn
+# or
+pnpm i
+```
+
+2) Configure environment
+- Set Google GenAI credentials for Genkit. Common setups include:
+  - `GOOGLE_GENAI_API_KEY` (if using Google AI Studio key)
+  - Or authenticate with Google Cloud if using Vertex AI models.
+
+Ensure your environment provides access to the model `googleai/gemini-1.5-pro` used in flows. For local development, placing `GOOGLE_GENAI_API_KEY` in `.env.local` is typical:
+```bash
+# .env.local
+GOOGLE_GENAI_API_KEY=your_api_key_here
+```
+
+3) Run the development server
+```bash
+bun dev
+# or
 npm run dev
 # or
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
+```
+Open `http://localhost:3000` to view the UI.
+
+## Available Scripts
+```bash
+bun dev            # next dev --turbopack
+bun run build      # next build --turbopack
+bun start          # next start
+bun run genkit     # genkit start (local Genkit tools console)
+bun run lint       # biome check
+bun run format     # biome format --write
+```
+(Use your chosen package manager equivalents.)
+
+## Core Concepts
+- `src/index.ts` defines two Genkit flows:
+  - `studyPlanGenerator`: simple string in/out flow returning bullet suggestions
+  - `studyPlanGeneratorStructured`: structured JSON output with topics and a resource, may call the `findEducationalLink` tool
+- `src/app/api/generate/route.ts` exposes a POST endpoint that validates input and invokes `studyPlanGeneratorStructured`.
+- `src/app/page.tsx` provides a small client UI to submit a subject and render results.
+
+## API
+### POST /api/generate
+- Request body:
+```json
+{ "subject": "World History" }
+```
+- Success response `200`:
+```json
+{
+  "data": {
+    "subject": "World History",
+    "topics": ["..."],
+    "resource": { "title": "...", "url": "https://..." }
+  }
+}
+```
+- Error responses:
+```json
+{ "error": "Missing subject" }     // 400
+{ "error": "Internal Server Error" } // 500
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Flows and Tools
+- Flow: `studyPlanGenerator(subject: string) → { text: string }`
+- Tool: `findEducationalLink(topic: string) → { title: string, url: string }`
+- Flow: `studyPlanGeneratorStructured(subject: string) → { subject, topics[], resource }`
+  - Uses model `googleai/gemini-1.5-pro` and can invoke `findEducationalLink`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Development Notes
+- The API route imports `genkit.config.ts` to register the `googleAI` plugin before calling flows.
+- Tailwind is configured via v4 preset in `postcss.config.mjs` and classes in `globals.css`.
+- Biome is used for lint/format; adjust rules in `biome.json`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Troubleshooting
+- 401/permission errors from generation:
+  - Verify `GOOGLE_GENAI_API_KEY` or cloud auth is correctly configured.
+  - Ensure the selected model is accessible to your key/account.
+- `fetch /api/generate` fails:
+  - Check server logs in the terminal running `dev`.
+  - Confirm request JSON includes a non-empty `subject`.
+- Type errors after dependency upgrades:
+  - Reinstall deps, then run `bun run lint` and `bun run format`.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+MIT (or project default). Update if different.
