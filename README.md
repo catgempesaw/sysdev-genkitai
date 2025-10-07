@@ -1,4 +1,4 @@
-# SysDev Genkit Workshop
+# SysDev Genkit Workshop | SYSDEV BUILD FORWARD 2025
 
 A minimal Next.js (App Router) app demonstrating Google Genkit flows and tools to generate personalized study plans via an API route, featuring "Francis the StudyMate" - a friendly AI-powered study plan generator.
 
