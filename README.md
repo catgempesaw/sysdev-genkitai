@@ -75,25 +75,106 @@ bun run format     # biome format --write
 (Use your chosen package manager equivalents.)
 
 ## Core Concepts
-- `src/index.ts` defines two Genkit flows:
-  - `studyPlanGenerator`: simple string in/out flow returning bullet suggestions
-  - `studyPlanGeneratorStructured`: structured JSON output with topics and a resource, may call the `findEducationalLink` tool
-- `src/app/api/generate/route.ts` exposes a POST endpoint that validates input and invokes `studyPlanGeneratorStructured`.
-- `src/app/page.tsx` provides a small client UI to submit a subject and render results.
+This project demonstrates comprehensive usage of Genkit's core features:
+
+### Prompts
+Reusable prompt templates defined with `ai.definePrompt()`:
+- `studyTopicsPrompt`: Generates study topics with customizable parameters
+- `structuredStudyPlanPrompt`: Creates detailed study plans with difficulty-based guidance
+
+### Tools
+Modular tool definitions using `ai.defineTool()`:
+- `findEducationalLink`: Finds educational resources across platforms (YouTube, Khan Academy, Coursera)
+- `estimateStudyTime`: Calculates study time estimates based on difficulty level
+- `generateQuizQuestions`: Creates assessment questions for topics
+
+### Flows
+Three production-ready flows demonstrating progressive complexity:
+- `studyPlanGenerator`: Simple text generation using defined prompts
+- `studyPlanGeneratorStructured`: Structured JSON output with tool integration
+- `enhancedStudyPlanGenerator`: Advanced flow combining multiple tools with conditional logic
+
+### API & UI
+- `src/app/api/generate/route.ts`: REST endpoint supporting multiple flow modes
+- `src/app/page.tsx`: Interactive UI with difficulty selection, model choice, and enhanced features
 
 ## API
 ### POST /api/generate
 - Request body:
 ```json
-{ "subject": "World History" }
+{
+  "subject": "World History",
+  "difficulty": "beginner",
+  "model": "googleai/gemini-2.0-flash-exp",
+  "flowMode": "structured",
+  "enhanced": false,
+  "includeTimeEstimates": false,
+  "includeQuiz": false,
+  "topicCount": 5
+}
 ```
-- Success response `200`:
+- Success response `200` (simple mode):
+```json
+{
+  "data": {
+    "text": "• Ancient Civilizations\n• Medieval Europe\n• Renaissance\n..."
+  },
+  "quiz": null,
+  "meta": {
+    "flowMode": "simple",
+    "toolsUsed": ["studyTopicsPrompt"]
+  }
+}
+```
+- Success response `200` (structured mode):
 ```json
 {
   "data": {
     "subject": "World History",
-    "topics": ["..."],
-    "resource": { "title": "...", "url": "https://..." }
+    "difficulty": "beginner",
+    "topics": ["Ancient Civilizations", "Medieval Europe", "..."],
+    "resource": {
+      "title": "Introduction to World History",
+      "url": "https://...",
+      "platform": "YouTube"
+    }
+  },
+  "quiz": null,
+  "meta": {
+    "flowMode": "structured",
+    "toolsUsed": ["structuredStudyPlanPrompt", "findEducationalLink"]
+  }
+}
+```
+- Success response `200` (enhanced mode with time estimates and quiz):
+```json
+{
+  "data": {
+    "subject": "World History",
+    "difficulty": "beginner",
+    "topics": [
+      {
+        "name": "Ancient Civilizations",
+        "estimatedTime": { "hoursPerWeek": 5, "totalWeeks": 4 }
+      }
+    ],
+    "resource": { "title": "...", "url": "https://...", "platform": "YouTube" },
+    "totalEstimatedHours": 20
+  },
+  "quiz": [
+    {
+      "topic": "Ancient Civilizations",
+      "questions": [
+        {
+          "question": "What were the main characteristics of Mesopotamian civilization?",
+          "type": "short-answer"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "flowMode": "enhanced",
+    "toolsUsed": ["structuredStudyPlanPrompt", "findEducationalLink", "estimateStudyTime", "generateQuizQuestions"]
   }
 }
 ```
@@ -103,11 +184,50 @@ bun run format     # biome format --write
 { "error": "Internal Server Error" } // 500
 ```
 
-## Flows and Tools
-- Flow: `studyPlanGenerator(subject: string) → { text: string }`
-- Tool: `findEducationalLink(topic: string) → { title: string, url: string }`
-- Flow: `studyPlanGeneratorStructured(subject: string) → { subject, topics[], resource }`
-  - Uses model `googleai/gemini-1.5-pro` and can invoke `findEducationalLink`.
+## Genkit Features Demonstrated
+
+### All 3 Flows Now Exposed in UI
+You can now select between different flow modes in the UI:
+
+1. **Simple Flow** (`studyPlanGenerator`)
+   - Uses: `studyTopicsPrompt`
+   - Returns plain text bullet list of topics
+   - Configurable topic count (3-10)
+   - Best for quick topic brainstorming
+
+2. **Structured Flow** (`studyPlanGeneratorStructured`)
+   - Uses: `structuredStudyPlanPrompt`, `findEducationalLink`
+   - Returns JSON with structured data
+   - Includes educational resources
+   - Best for organized study plans
+
+3. **Enhanced Flow** (`enhancedStudyPlanGenerator`)
+   - Uses: All above + `estimateStudyTime`, `generateQuizQuestions` (optional)
+   - Returns enhanced JSON with time estimates
+   - Optional quiz generation for each topic
+   - Best for comprehensive learning plans
+
+### Prompts (ai.definePrompt)
+✅ **All prompts now used:**
+- `studyTopicsPrompt`: Simple topic generation (used in simple flow)
+- `structuredStudyPlanPrompt`: Detailed study plan creation (used in structured/enhanced flows)
+- Reusable templates with typed inputs
+- Variable interpolation with `{{variable}}` syntax
+
+### Tools (ai.defineTool)
+✅ **All tools now used:**
+- `findEducationalLink`: Platform-specific resource discovery (YouTube, Khan Academy, Coursera)
+- `estimateStudyTime`: Difficulty-based time calculations (beginner/intermediate/advanced)
+- `generateQuizQuestions`: Assessment question generation (multiple-choice, true-false, short-answer)
+- Typed input/output schemas with Zod validation
+- Tool composition in generate calls
+
+### Visual Indicators
+The UI now shows:
+- **Active Tools Badge**: Displays which Genkit tools/prompts are being used for each request
+- **Quiz Section**: Beautiful purple-themed quiz display when enabled
+- **Flow Selection**: Dropdown to choose between simple/structured/enhanced modes
+- **Advanced Options**: Contextual options based on selected flow
 
 ## Development Notes
 - The API route imports `genkit.config.ts` to register the `googleAI` plugin before calling flows.
@@ -123,6 +243,3 @@ bun run format     # biome format --write
   - Confirm request JSON includes a non-empty `subject`.
 - Type errors after dependency upgrades:
   - Reinstall deps, then run `bun run lint` and `bun run format`.
-
-## License
-MIT (or project default). Update if different.

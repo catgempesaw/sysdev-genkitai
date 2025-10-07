@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "../../genkit.config"; // ensure Genkit plugins are registered at startup
+import "../index"; // initialize Genkit runtime and flows on server startup
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +36,10 @@ export default function RootLayout({
           Skip to content
         </a>
         {/* header removed per request */}
-        <main id="main-content" className="mx-auto max-w-3xl w-full px-6 sm:px-8 py-8">
+        <main
+          id="main-content"
+          className="mx-auto max-w-3xl w-full px-6 sm:px-8 py-8"
+        >
           {children}
         </main>
         <footer className="mx-auto max-w-5xl px-4 sm:px-6 py-8 text-xs text-brand-50/70">

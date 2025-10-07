@@ -62,9 +62,27 @@ body {
 /* Subtle textile-inspired background overlay using pure CSS (no assets) */
 .blue-textile-bg {
   background-image:
-    radial-gradient( circle at 1px 1px, color-mix(in oklab, var(--color-brand-700) 40%, transparent) 1px, transparent 1px ),
-    linear-gradient(45deg, color-mix(in oklab, var(--color-brand-900) 96%, transparent) 25%, transparent 25%),
-    linear-gradient(-45deg, color-mix(in oklab, var(--color-brand-900) 96%, transparent) 25%, transparent 25%);
-  background-size: 12px 12px, 24px 24px, 24px 24px;
-  background-position: 0 0, 0 0, 12px 12px;
+    radial-gradient(
+      circle at 1px 1px,
+      color-mix(in oklab, var(--color-brand-700) 40%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      45deg,
+      color-mix(in oklab, var(--color-brand-900) 96%, transparent) 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      -45deg,
+      color-mix(in oklab, var(--color-brand-900) 96%, transparent) 25%,
+      transparent 25%
+    );
+  background-size:
+    12px 12px,
+    24px 24px,
+    24px 24px;
+  background-position:
+    0 0,
+    0 0,
+    12px 12px;
 }
